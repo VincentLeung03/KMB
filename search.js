@@ -2,6 +2,10 @@ var routeList;
 var stopList;
 var routeStopList;
 
+var current_route;
+var current_bound;
+var current_service_type;
+
 $(function () {
     Promise.all([
         $.ajax({ url: 'https://data.etabus.gov.hk/v1/transport/kmb/route/', type: 'GET' }),
@@ -17,10 +21,18 @@ $(function () {
             keyupRouteInputEvent($(this).val().toUpperCase())
         });
 
+        setInterval(function () {
+            if (current_route != null && current_bound != null && current_service_type != null) {
+                getRouteEtaList(current_route, current_bound, current_service_type);
+            }
+        }, 5000);
+
     }, (err) => {
         alert(err);
     });
 });
+
+
 
 function drawRouteTable(inputRouteList) {
     if (inputRouteList == null) {
@@ -44,6 +56,10 @@ function drawRouteTable(inputRouteList) {
         var route = td.text();
         var bound = td.find('.bound').val();
         var service_type = td.find('.service_type').val();
+
+        current_route = route;
+        current_bound = bound;
+        current_service_type = service_type;
 
         getRouteEtaList(route, bound, service_type);
         //$('#goToEtaTable')[0].click();
